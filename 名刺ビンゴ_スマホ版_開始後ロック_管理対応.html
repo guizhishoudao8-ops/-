@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00a7d8">
+<title>名刺ビンゴ 4×4</title>
+<style>
+:root{--c:#00a7d8;--n:#173b57;--p:#eef9fc;--g:#64737b;--y:#ffd95a;--pink:#f26b8a;--line:#c9e0e8}
+*{box-sizing:border-box}body{margin:0;background:#f4f8fa;color:#263238;font-family:"Meiryo UI","Yu Gothic UI",system-ui,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#00a7d8,#008bc2);color:#fff;padding:14px 16px 12px;box-shadow:0 2px 12px #0002}
+header h1{font-size:21px;margin:0}.sub{font-size:12px;margin-top:3px;opacity:.9}.wrap{max-width:720px;margin:auto;padding:14px 12px 100px}
+.panel{background:#fff;border:1px solid #dceaf0;border-radius:16px;padding:14px;box-shadow:0 4px 14px #173b5710;margin-bottom:12px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.tab{border:0;border-radius:12px;padding:12px;font-weight:700;background:#dfeef3;color:var(--n);font-size:15px}.tab.active{background:var(--c);color:#fff}
+.ownerGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.ownerField{display:flex;flex-direction:column;gap:5px}.ownerField.full{grid-column:1/-1}.ownerField label{font-size:11px;font-weight:700;color:var(--g)}.ownerField input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px;font-size:14px;outline:none}.ownerField input:focus{border-color:var(--c);box-shadow:0 0 0 3px #00a7d818}.ownerBar{background:#eaf7fb;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px;color:var(--n)}.ownerBar strong{font-size:15px}.cardId{font-size:10px;color:var(--g);margin-top:3px}.lockedMsg{font-size:11px;color:#8a6900;background:#fff5d6;border-radius:9px;padding:8px;margin-top:8px;text-align:center}.help{font-size:13px;line-height:1.6;color:var(--g);margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.editCell{border:1.5px solid var(--line);border-radius:12px;padding:7px;background:#fff;min-width:0}.num{font-size:10px;color:#7b8d95;margin-bottom:4px}.editCell input{width:100%;border:0;border-bottom:1px solid #dce8ec;padding:5px 2px;background:transparent;font-size:12px;outline:none;color:var(--n)}.editCell input:last-child{border-bottom:0;font-weight:700;font-size:13px}.editCell:focus-within{border-color:var(--c);box-shadow:0 0 0 3px #00a7d818}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.btn{border:0;border-radius:12px;padding:13px 10px;font-weight:700;font-size:14px}.primary{background:var(--c);color:#fff}.secondary{background:#e7f1f5;color:var(--n)}.danger{background:#fff0f3;color:#b62f50}.full{grid-column:1/-1}
+.playCell{aspect-ratio:1/1;border:2px solid var(--c);background:#fff;border-radius:13px;padding:5px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;overflow:hidden;user-select:none;-webkit-tap-highlight-color:transparent;position:relative}.playCell .company{font-size:10px;color:var(--g);line-height:1.15;max-width:100%;overflow-wrap:anywhere}.playCell .name{font-size:clamp(12px,3.7vw,18px);font-weight:800;color:var(--n);line-height:1.15;margin-top:4px;max-width:100%;overflow-wrap:anywhere}.playCell.checked{background:var(--y);border-color:#d9a600;transform:scale(.98)}.playCell.checked:after{content:"✓";position:absolute;right:5px;top:1px;color:#8a6900;font-weight:900;font-size:20px}.playCell.bingo{background:var(--pink);border-color:#d33f64;animation:pulse .75s infinite alternate}.playCell.bingo .company,.playCell.bingo .name{color:#fff}@keyframes pulse{to{transform:scale(1.03)}}
+.status{text-align:center;border-radius:14px;background:var(--p);padding:10px;margin-bottom:10px;color:var(--n);font-weight:700;min-height:42px}.status.win{background:#fff1b8;color:#6a5100;font-size:18px}.count{font-size:12px;font-weight:400;margin-top:2px}.hidden{display:none!important}
+.note{font-size:11px;color:#71828a;text-align:center;margin-top:10px}.empty{color:#a6b2b7!important;font-weight:400!important}
+@media(max-width:390px){.wrap{padding-left:8px;padding-right:8px}.grid{gap:5px}.editCell{padding:5px}.playCell{border-radius:10px;padding:3px}.playCell .company{font-size:9px}}
+@media print{header,.tabs,.actions,.help,.note{display:none!important}body{background:#fff}.wrap{padding:0}.panel{box-shadow:none;border:0}.grid{gap:5mm}.playCell{border:1px solid #000;border-radius:0}.status{display:none}}
+</style>
+</head>
+<body>
+<header><h1>名刺ビンゴ</h1><div class="sub">会社名と名前を入力して、スマホで4×4ビンゴ</div></header>
+<main class="wrap">
+  <div class="tabs"><button class="tab active" id="editTab">カード入力</button><button class="tab" id="playTab">ビンゴ開始</button></div>
+  <section id="editPanel" class="panel">
+    <div class="ownerGrid">
+      <div class="ownerField"><label for="ownerCompany">このカードの所有者：会社名</label><input id="ownerCompany" placeholder="例：西部ガス株式会社"></div>
+      <div class="ownerField"><label for="ownerName">このカードの所有者：氏名</label><input id="ownerName" placeholder="例：手嶋 貴治"></div>
+    </div>
+    <p class="help">交換した名刺を見ながら、16人分の<strong>会社名</strong>と<strong>名前</strong>を入力してください。開始後は入力画面へ戻れません。</p>
+    <div class="grid" id="editGrid"></div>
+    <div class="actions">
+      <button class="btn primary full" id="startBtn">このカードでビンゴを始める</button>
+      <button class="btn secondary" id="sampleBtn">入力例を表示</button>
+      <button class="btn danger" id="clearBtn">すべて消去</button>
+    </div>
+  </section>
+  <section id="playPanel" class="panel hidden">
+    <div class="ownerBar"><strong id="ownerDisplay"></strong><div class="cardId" id="cardIdDisplay"></div></div>
+    <div class="status" id="status">読み上げられた人のマスをタップ<div class="count">チェック 0 / 16</div></div>
+    <div class="grid" id="playGrid"></div>
+    <div class="actions">
+      <button class="btn secondary full" id="shareBtn">管理者へカード情報を共有</button>
+      <button class="btn danger full" id="resetChecksBtn">印だけリセット</button>
+    </div>
+    <p class="lockedMsg">開始後は入力画面へ戻れません。入力内容は、この端末に保存されています。</p>
+    <p class="note">縦・横・斜めのいずれか1列がそろうと「ビンゴ！」と表示されます。</p>
+  </section>
+</main>
+<script>
+const N=16, key='namecard-bingo-v3';
+let owner={company:'',name:'',cardId:'',started:false,startedAt:''};
+let data=Array.from({length:N},()=>({company:'',name:'',checked:false}));
+const $=s=>document.querySelector(s);
+function load(){try{const v=JSON.parse(localStorage.getItem(key));if(v&&Array.isArray(v.data)&&v.data.length===N){data=v.data;owner=v.owner||owner}}catch(e){}}
+function save(){localStorage.setItem(key,JSON.stringify({owner,data}))}
+function makeId(){return 'NCB-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+Math.random().toString(36).slice(2,7).toUpperCase()}
+function syncOwnerInputs(){if($('#ownerCompany'))$('#ownerCompany').value=owner.company||'';if($('#ownerName'))$('#ownerName').value=owner.name||''}
+function ownerText(){return `${owner.company||'会社名未入力'} / ${owner.name||'氏名未入力'}`}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function renderEdit(){const g=$('#editGrid');g.innerHTML='';data.forEach((v,i)=>{const d=document.createElement('div');d.className='editCell';d.innerHTML=`<div class="num">${i+1}</div><input aria-label="${i+1}番 会社名" data-i="${i}" data-k="company" placeholder="会社名" value="${esc(v.company)}"><input aria-label="${i+1}番 名前" data-i="${i}" data-k="name" placeholder="名前" value="${esc(v.name)}">`;g.appendChild(d)});g.querySelectorAll('input').forEach(x=>x.addEventListener('input',e=>{data[+e.target.dataset.i][e.target.dataset.k]=e.target.value.trimStart();save()}))}
+const lines=[...Array(4)].map((_,r)=>[0,1,2,3].map(c=>r*4+c)).concat([...Array(4)].map((_,c)=>[0,1,2,3].map(r=>r*4+c)),[[0,5,10,15],[3,6,9,12]]);
+function wins(){return lines.filter(line=>line.every(i=>data[i].checked&&data[i].name.trim()))}
+function updateStatus(){
+  const w=wins(), winSet=new Set(w.flat()), c=data.filter(v=>v.checked).length, st=$('#status');
+  document.querySelectorAll('.playCell').forEach((cell,i)=>{
+    cell.classList.toggle('checked',!!data[i].checked);
+    cell.classList.toggle('bingo',winSet.has(i));
+  });
+  if(w.length){
+    st.className='status win';
+    st.innerHTML=`🎉 ビンゴ！ <div class="count">完成した列：${w.length}　チェック ${c} / 16</div>`;
+  }else{
+    st.className='status';
+    st.innerHTML=`読み上げられた人のマスをタップ<div class="count">チェック ${c} / 16</div>`;
+  }
+}
+function toggleCell(i){
+  if(!data[i] || !data[i].name.trim()) return;
+  data[i].checked=!data[i].checked;
+  save();
+  updateStatus();
+  if(navigator.vibrate) navigator.vibrate(25);
+}
+function renderPlay(){
+  $('#ownerDisplay').textContent=ownerText(); $('#cardIdDisplay').textContent=`カードID：${owner.cardId}`;
+  const g=$('#playGrid'); g.innerHTML='';
+  data.forEach((v,i)=>{
+    const b=document.createElement('button');
+    b.type='button'; b.className='playCell'; b.dataset.i=i;
+    b.innerHTML=`<span class="company ${v.company?'':'empty'}">${esc(v.company||'会社名')}</span><span class="name ${v.name?'':'empty'}">${esc(v.name||'未入力')}</span>`;
+    g.appendChild(b);
+  });
+  updateStatus();
+}
+// スマホのタップを即時反映。画面再読込や「ビンゴ開始」の再押下は不要です。
+$('#playGrid').addEventListener('click',e=>{
+  const cell=e.target.closest('.playCell');
+  if(!cell) return;
+  toggleCell(Number(cell.dataset.i));
+});
+function show(mode){
+  if(owner.started) mode='play';
+  const play=mode==='play';
+  $('#editPanel').classList.toggle('hidden',play);
+  $('#playPanel').classList.toggle('hidden',!play);
+  $('#editTab').classList.toggle('active',!play);
+  $('#playTab').classList.toggle('active',play);
+  $('#editTab').classList.toggle('hidden',owner.started);
+  $('#playTab').classList.toggle('hidden',owner.started);
+  document.querySelector('.tabs').classList.toggle('hidden',owner.started);
+  if(play)renderPlay();else{renderEdit();syncOwnerInputs()}
+  scrollTo({top:0,behavior:'smooth'});
+}
+function startGame(){
+  owner.company=$('#ownerCompany').value.trim(); owner.name=$('#ownerName').value.trim();
+  if(!owner.company||!owner.name){alert('このカードの所有者の「会社名」と「氏名」を入力してください。');return}
+  if(!data.every(v=>v.company.trim()&&v.name.trim())){if(!confirm('未入力のマスがあります。このまま開始しますか？'))return}
+  if(!confirm('ビンゴを開始すると入力画面には戻れません。開始しますか？'))return;
+  owner.started=true; owner.startedAt=new Date().toISOString(); owner.cardId=owner.cardId||makeId(); save(); show('play');
+}
+function managementText(){
+  const w=wins();
+  const rows=data.map((v,i)=>`${i+1}. ${v.company} / ${v.name}${v.checked?' [済]':''}`).join('\n');
+  return `名刺ビンゴ管理情報\nカードID: ${owner.cardId}\n所有者会社名: ${owner.company}\n所有者氏名: ${owner.name}\n開始日時: ${owner.startedAt}\nチェック数: ${data.filter(v=>v.checked).length}/16\nビンゴ列数: ${w.length}\n\n登録カード\n${rows}`;
+}
+async function shareManagement(){
+  const text=managementText();
+  try{
+    if(navigator.share){await navigator.share({title:`名刺ビンゴ ${owner.name}`,text});return}
+    await navigator.clipboard.writeText(text); alert('管理情報をコピーしました。Teamsやメールで事務局へ送信してください。');
+  }catch(e){ if(e.name!=='AbortError'){prompt('以下をコピーして事務局へ送信してください。',text)} }
+}
+$('#editTab').onclick=()=>show('edit');$('#playTab').onclick=()=>owner.started?show('play'):startGame();$('#startBtn').onclick=startGame;$('#shareBtn').onclick=shareManagement;
+$('#ownerCompany').addEventListener('input',e=>{owner.company=e.target.value;save()});$('#ownerName').addEventListener('input',e=>{owner.name=e.target.value;save()});
+$('#resetChecksBtn').onclick=()=>{data.forEach(v=>v.checked=false);save();renderPlay()};
+$('#clearBtn').onclick=()=>{if(confirm('入力内容とチェックをすべて消去しますか？')){owner={company:'',name:'',cardId:'',started:false,startedAt:''};data=Array.from({length:N},()=>({company:'',name:'',checked:false}));save();renderEdit();syncOwnerInputs()}};
+$('#sampleBtn').onclick=()=>{const co=['西部ガス','九州ガス','北部エネルギー','中央サービス'];const nm=['山田','佐藤','鈴木','田中','高橋','伊藤','渡辺','加藤','吉田','松本','山口','井上','木村','清水','山本','阿部'];data=nm.map((name,i)=>({company:co[i%4],name,checked:false}));save();renderEdit()};
+load();if(owner.started)show('play');else{renderEdit();syncOwnerInputs();}
+</script>
+</body>
+</html>
